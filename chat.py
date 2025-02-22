@@ -106,7 +106,7 @@ def process_user_input_streaming(assistant_id, chat_container, prompt_container)
     """Handle user input and stream assistant response with tool calls"""
     # Display chat input in the prompt container
     with prompt_container:
-        prompt = st.chat_input(placeholder="Type your question or comment here...")
+        prompt = st.chat_input(placeholder="Type here...")
     
     if prompt:
         # Add user message to session state and display in chat container
