@@ -150,8 +150,8 @@ def main():
     assistant_id = st.secrets.openai.aether_assistant_id
     
     # Create containers
-    chat_container = st.container(border=True, height=250)
-    prompt_container = st.container(border=False, height=100)
+    chat_container = st.container(border=True, height=200)
+    prompt_container = st.container(border=False, height=80)
     # chat_container = st.container(border = False)
     # prompt_container = st.container(border=False)
     #chat_container = st.container(border=True, height=400)
