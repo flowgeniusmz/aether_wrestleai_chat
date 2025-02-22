@@ -13,8 +13,6 @@ urllib3
 streamlit_elements
 streamlit_extras
 extra_streamlit_components
-temp
-opencv-python-headless
 ipython
 pillow
 numpy
