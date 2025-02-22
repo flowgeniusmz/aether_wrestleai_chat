@@ -152,7 +152,7 @@ def main():
     # Create containers
     #chat_container = st.container(border=True, height=200)
     chat_container = get_containerstyle(height=200, border=False)
-    prompt_container = st.container(border=False, height=80)
+    prompt_container = st.container(border=False, height=60)
     # chat_container = st.container(border = False)
     # prompt_container = st.container(border=False)
     #chat_container = st.container(border=True, height=400)
