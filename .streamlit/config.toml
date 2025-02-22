@@ -1,0 +1,12 @@
+[theme]
+primaryColor="#3fb0e8"
+backgroundColor="#192841"
+secondaryBackgroundColor="#3fb0e8"
+textColor="#f9f9f9"
+
+[server]
+maxUploadSize=1028
+
+[client]
+showSidebarNavigation = true
+
