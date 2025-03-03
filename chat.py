@@ -90,7 +90,7 @@ def setup_session_state():
     if "messages" not in st.session_state:
         st.session_state.messages = [{
             'role': 'assistant', 
-            'content': 'Welcome to WrestleAI - how can I assist you today?'
+            'content': 'Welcome to AetherAI - how can I assist you today?'
         }]
     if "thread_id" not in st.session_state:
         st.session_state.thread_id = oaiClient.beta.threads.create().id
