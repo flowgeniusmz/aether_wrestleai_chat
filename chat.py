@@ -12,6 +12,9 @@ from utils import get_containerstyle
 oaiClient = OpenAI(api_key=st.secrets.openai.aether_api_key)
 tavClient = TavilyClient(api_key=st.secrets.tavily.api_key)
 
+# Set AI Avatar
+ai_avatar = st.secrets.app.chat_icon
+
 # Tool functions
 def search_web(query: str): 
     response = tavClient.search(query=query, search_depth="advanced", max_results=5, include_answer=True, include_raw_content=True)
@@ -99,7 +102,11 @@ def display_chat_history(chat_container):
     """Display all messages in the chat history within the provided container"""
     with chat_container:
         for message in st.session_state.messages:
-            with st.chat_message(message["role"]):
+            if message['role'] == "assistant":
+                avatar = ai_avatar
+            else:
+                avatar = None
+            with st.chat_message(message["role"], avatar=avatar):
                 st.markdown(message["content"])
 
 def process_user_input_streaming(assistant_id, chat_container, prompt_container):
@@ -125,7 +132,7 @@ def process_user_input_streaming(assistant_id, chat_container, prompt_container)
 
         # Create run with streaming enabled and display in chat container
         with chat_container:
-            with st.chat_message("assistant"):
+            with st.chat_message("assistant", avatar=ai_avatar):
                 handler = EventHandler()
                 response_placeholder = st.empty()  # Create a placeholder for streaming response
                 full_response = ""
