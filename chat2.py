@@ -5,7 +5,7 @@ from tavily import TavilyClient
 import json
 from typing import List
 from utils import get_containerstyle
-from datetime import datetime
+
 
 
 # Initialize clients
@@ -17,77 +17,11 @@ ai_avatar = st.secrets.app.chat_icon
 
 
 
-# Get current date dynamically
-current_date = datetime.now().strftime("%m/%d/%Y")
 
-# Define the prompt with a placeholder for the date
-prompt = """
-You are a wrestling expert, specializing in youth, high school, collegiate, and Olympic wrestling, including folkstyle, freestyle, and Greco-Roman styles. Assist users with their wrestling-related inquiries using your extensive knowledge of techniques, rules, philosophies, and strategies.
-
-IMPORTANT - THE CURRENT DATE IS {date} - YOU WILL USE THIS IN YOUR SEARCH QUERY.
-
-# Guidelines
-
-- Only provide information related to amateur wrestling; do not address fake wrestling.
-- For current events, perform a web search including "amateur wrestling."
-- Use "https://themat.com" and "https://flowrestling.com" with the Extract Content tool to find relevant information. DO NOT USE SEARCH WEB TOOL WITH THESE
-- Assume no current events knowledge without a search.
-
-# Output Format
-
-Provide clear and informative responses tailored to the user's specific wrestling-related query.
-"""
-
-# Format the prompt with the current date
-formatted_prompt = prompt.format(date=current_date)
-
-# Tool Json
-web_search_json = {
-        "name": "web_search",
-        "description": "Search the web with a given query and return relevant results.",
-        "strict": True,
-        "parameters": {
-            "type": "object",
-            "required": [
-            "query"
-            ],
-            "properties": {
-            "query": {
-                "type": "string",
-                "description": "The search query string"
-            }
-            },
-            "additionalProperties": False
-        }
-        }
-
-
-extract_content_json ={
-        "name": "extract_content",
-        "description": "Extract content from specific URLs.",
-        "strict": True,
-        "parameters": {
-            "type": "object",
-            "required": [
-            "urls"
-            ],
-            "properties": {
-            "urls": {
-                "type": "array",
-                "description": "List of URLs to extract content from",
-                "items": {
-                "type": "string",
-                "description": "A URL to extract content from"
-                }
-            }
-            },
-            "additionalProperties": False
-        }
-        }
 
 
 # Tool functions
-def web_search(query: str): 
+def search_web(query: str): 
     response = tavClient.search(query=query, search_depth="advanced", max_results=5, include_answer=True, include_raw_content=True)
     return response
 
@@ -128,8 +62,8 @@ class EventHandler(AssistantEventHandler):
             targs = json.loads(tool.function.arguments)
             tid = tool.id
             try:
-                if tname == "web_search":
-                    tresult = web_search(query=targs['query'])
+                if tname == "search_web":
+                    tresult = search_web(query=targs['query'])
                 elif tname == "extract_content": 
                     tresult = extract_content(urls=targs['urls'])
                 else:
@@ -168,10 +102,6 @@ def setup_session_state():
         }]
     if "thread_id" not in st.session_state:
         st.session_state.thread_id = oaiClient.beta.threads.create().id
-    
-    if "assistant_id" not in st.session_state:
-        st.session_state.assistant = oaiClient.beta.assistants.create(instructions=formatted_prompt, name="Aether Assistant - Custom1", model="gpt-4o",tools=[{"type": "file_search"}, {"type": "function", "function": extract_content_json}, {"type": "function", "function": web_search_json}],tool_resources={"file_search": {"vector_store_ids": [st.secrets.openai.aether_vectorstore_id]}})
-        st.session_state.assistant_id = st.session_state.assistant.id
 
 def display_chat_history(chat_container):
     """Display all messages in the chat history within the provided container"""
@@ -229,7 +159,7 @@ def process_user_input_streaming(assistant_id, chat_container, prompt_container)
 
 def main():
     """Main application function"""
-    #assistant_id = st.secrets.openai.aether_assistant_id
+    assistant_id = st.secrets.openai.aether_assistant_id
     
     # Create containers
     #chat_container = st.container(border=True, height=200)
@@ -242,7 +172,7 @@ def main():
     
     setup_session_state()
     display_chat_history(chat_container)
-    process_user_input_streaming(st.session_state.assistant_id, chat_container, prompt_container)
+    process_user_input_streaming(assistant_id, chat_container, prompt_container)
 
 if __name__ == "__main__":
     main()
